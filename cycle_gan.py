@@ -281,6 +281,36 @@ class cycleGAN(nn.Module):
         axes[1][2].set_title('recovered image B')
         return axes
             
+    def return_loss(self):
+        return [self.loss_D_A,self.loss_G_A,
+                self.loss_cycle_A,self.loss_idt_A,
+                self.loss_D_B,self.loss_G_B,
+                self.loss_cycle_B,self.loss_idt_B]
+    
+    def save_checkpoint(self, checkpoint, epoch):
+        '''
+        save checkpoints (losses, current epoch)
+        '''
+        save_filename = '%s_net_checkpoint.pth' % (epoch)
+        save_path = os.path.join(self.save_dir, save_filename)
+        torch.save(checkpoint, save_path)
         
+    def load_checkpoint(self, epoch):
+        '''
+        load checkpoints (losses, current epoch)
+        if file does not exist, create new checkpoint
+        '''
+        load_filename = '%s_net_checkpoint.pth' % (epoch)
+        load_path = os.path.join(self.save_dir, load_filename)
+        if os.path.isfile(load_path):
+            checkpoint = torch.load(load_path)
+        else:
+            print(f'{load_filename} do not exist')
+            print('start new training')
+            checkpoint = {}
+            checkpoint['Loss'] = []
+            checkpoint['current epoch'] = 0
+        return checkpoint
+                
 
 
